@@ -14,13 +14,18 @@ const requestHandler = (req, res) => {
   }
 
   if (url === '/message' && method === 'POST') {
+    // Stream, adatáramlás
+    // az adatok folyamatosan érkeznek, kis adagokban (chunks), de előtte dolgoznunk kell velük
     const reqBody = [];
     req.on('data', (chunk) => {
       reqBody.push(chunk);
     });
 
+    // Buffer
+    // a végén egy nagy egésszé állnak össze
     return req.on('end', () => {
       const parsedBody = Buffer.concat(reqBody).toString();
+      // message=Hello
       const message = parsedBody.split('=')[1];
       fs.writeFile('message.txt', message, (err) => {
         res.statusCode = 302;
